@@ -22,8 +22,8 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  *
- * @author zhouss
- * @since 2021-12-16
+ * @author xuezechao1
+ * @since 2022-02-07
  */
 @org.springframework.context.annotation.Configuration
 public class Configuration {

@@ -19,15 +19,14 @@ package com.zk.resttemplate.provider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
- * @author zhouss
- * @since 2021-12-16
+ * @author xuezechao1
+ * @since 2022-02-07
  */
 @SpringBootApplication
 @RestController

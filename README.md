@@ -31,6 +31,8 @@ A microservice architecture using Sermant has the following has the following th
 
 ## Quick start
 
+Please refer to the  [QuickStart](docs/QuickStart.md)
+
 ### Download or compile
 
 Click [here](https://github.com/huaweicloud/Sermant/releases) to download **Sermant** binary package. If you will to compile the project yourself, please follow the following steps.
