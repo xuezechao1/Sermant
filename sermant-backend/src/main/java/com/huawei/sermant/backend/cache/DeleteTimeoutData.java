@@ -22,12 +22,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TimerTask;
 
-/**
- * 清理过期数据
- *
- * @author xuezechao
- * @since 2022-03-14
- */
 public class DeleteTimeoutData extends TimerTask {
 
     private static final int MAX_EFFECTIVE_TIME = 3000;
