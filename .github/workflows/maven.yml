@@ -32,11 +32,22 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 8
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '8'
           distribution: 'adopt'
-          cache: maven
+      - name: maven-settings-xml-action
+        uses: whelk-io/maven-settings-xml-action@v20
+        with:
+          mirrors: >
+            [
+              {
+                "id": "central",
+                "name": "Central Repository",
+                "mirrorOf": "*",
+                "url": "https://repo.maven.apache.org/maven2"
+              }
+            ]
       - name: Create License Binary Suffix
         run: |
           mvn license:aggregate-add-third-party
