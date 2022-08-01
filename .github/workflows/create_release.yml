@@ -11,7 +11,7 @@ env:
 jobs:
   auto-create-release:
     name: Auto Create Release
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Source # 检出代码
         uses: actions/checkout@v2
