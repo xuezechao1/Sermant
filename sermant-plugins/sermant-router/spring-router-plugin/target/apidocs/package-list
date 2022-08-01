@@ -1,0 +1,5 @@
+com.huaweicloud.sermant.router.spring.cache
+com.huaweicloud.sermant.router.spring.declarer
+com.huaweicloud.sermant.router.spring.interceptor
+com.huaweicloud.sermant.router.spring.service
+com.huaweicloud.sermant.router.spring.utils

@@ -1,0 +1,7 @@
+com.huawei.fowcontrol.res4j.chain
+com.huawei.fowcontrol.res4j.chain.context
+com.huawei.fowcontrol.res4j.chain.handler
+com.huawei.fowcontrol.res4j.exceptions
+com.huawei.fowcontrol.res4j.handler
+com.huawei.fowcontrol.res4j.service
+com.huawei.fowcontrol.res4j.util

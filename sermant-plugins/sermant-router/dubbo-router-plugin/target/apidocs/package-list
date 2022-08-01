@@ -1,0 +1,5 @@
+com.huaweicloud.sermant.router.dubbo.cache
+com.huaweicloud.sermant.router.dubbo.declarer
+com.huaweicloud.sermant.router.dubbo.interceptor
+com.huaweicloud.sermant.router.dubbo.service
+com.huaweicloud.sermant.router.dubbo.utils

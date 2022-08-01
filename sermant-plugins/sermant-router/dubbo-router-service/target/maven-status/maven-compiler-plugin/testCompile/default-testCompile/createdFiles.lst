@@ -1,0 +1,13 @@
+com/huaweicloud/sermant/router/dubbo/strategy/type/ListTypeStrategyTest.class
+com/huaweicloud/sermant/router/dubbo/service/ApplicationConfigServiceTest.class
+com/huaweicloud/sermant/router/dubbo/strategy/type/Entity.class
+com/huaweicloud/sermant/router/dubbo/strategy/RuleStrategyHandlerTest$ApacheInvoker.class
+com/huaweicloud/sermant/router/dubbo/strategy/TypeStrategyChooserTest.class
+com/huaweicloud/sermant/router/dubbo/strategy/type/ObjectTypeStrategyTest.class
+com/huaweicloud/sermant/router/dubbo/strategy/RuleStrategyHandlerTest$AlibabaInvoker.class
+com/huaweicloud/sermant/router/dubbo/strategy/RuleStrategyHandlerTest.class
+com/huaweicloud/sermant/router/dubbo/strategy/type/EmptyTypeStrategyTest.class
+com/huaweicloud/sermant/router/dubbo/strategy/type/MapTypeStrategyTest.class
+com/huaweicloud/sermant/router/dubbo/service/ClusterServiceTest.class
+com/huaweicloud/sermant/router/dubbo/strategy/type/ArrayTypeStrategyTest.class
+com/huaweicloud/sermant/router/dubbo/strategy/type/EnabledTypeStrategyTest.class

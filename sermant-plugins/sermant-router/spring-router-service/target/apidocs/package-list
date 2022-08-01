@@ -1,0 +1,5 @@
+com.huaweicloud.sermant.router.spring.service
+com.huaweicloud.sermant.router.spring.strategy
+com.huaweicloud.sermant.router.spring.strategy.instance
+com.huaweicloud.sermant.router.spring.strategy.rule
+com.huaweicloud.sermant.router.spring.utils

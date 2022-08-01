@@ -1,0 +1,10 @@
+com.huawei.flowcontrol
+com.huawei.flowcontrol.config
+com.huawei.flowcontrol.inject
+com.huawei.flowcontrol.inject.retry
+com.huawei.flowcontrol.retry
+com.huawei.flowcontrol.retry.cluster
+com.huawei.flowcontrol.retry.handler
+com.huawei.flowcontrol.service
+com.huawei.flowcontrol.service.rest4j
+com.huawei.flowcontrol.service.sen

@@ -1,0 +1,4 @@
+com/huaweicloud/sermant/router/config/service/ConfigService.class
+com/huaweicloud/sermant/router/config/listener/RouterConfigListener.class
+com/huaweicloud/sermant/router/config/service/SpringConfigServiceimpl.class
+com/huaweicloud/sermant/router/config/service/DubboConfigServiceimpl.class

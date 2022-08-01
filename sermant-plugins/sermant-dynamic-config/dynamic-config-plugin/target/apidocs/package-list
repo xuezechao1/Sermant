@@ -1,0 +1,10 @@
+com.huawei.dynamic.config
+com.huawei.dynamic.config.closer
+com.huawei.dynamic.config.declarers
+com.huawei.dynamic.config.entity
+com.huawei.dynamic.config.init
+com.huawei.dynamic.config.inject
+com.huawei.dynamic.config.interceptors
+com.huawei.dynamic.config.resolver
+com.huawei.dynamic.config.source
+com.huawei.dynamic.config.subscribe

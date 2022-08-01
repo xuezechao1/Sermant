@@ -7,7 +7,7 @@
     <parent>
         <artifactId>sermant</artifactId>
         <groupId>com.huaweicloud.sermant</groupId>
-        <version>1.0.0</version>
+        <version>0.4.0-SNAPSHOT</version>
     </parent>
     <artifactId>sermant-agentcore</artifactId>
     <packaging>pom</packaging>
@@ -115,7 +115,7 @@
                         <configuration>
                             <serverId>ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
                 </plugins>

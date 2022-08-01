@@ -1,0 +1,10 @@
+com/huawei/dynamic/config/interceptors/SpringFactoriesInterceptorTest$1.class
+com/huawei/dynamic/config/interceptors/SpringFactoriesInterceptorTest.class
+com/huawei/dynamic/config/inject/ClassInjectDefineTest.class
+com/huawei/dynamic/config/sources/TestConfigSources.class
+com/huawei/dynamic/config/interceptors/SpringFactoriesInterceptorTest$2.class
+com/huawei/dynamic/config/sources/MockEnvironment.class
+com/huawei/dynamic/config/source/SpringEnvironmentProcessorTest.class
+com/huawei/dynamic/config/resolver/DefaultConfigResolverTest.class
+com/huawei/dynamic/config/ConfigHolderTest.class
+com/huawei/dynamic/config/sources/TestLowestConfigSources.class

@@ -1,0 +1,5 @@
+com/huaweicloud/sermant/router/common/constants/RouterConstant.class
+com/huaweicloud/sermant/router/common/utils/ReflectUtils.class
+com/huaweicloud/sermant/router/common/addr/AddrCache.class
+com/huaweicloud/sermant/router/common/config/RouterConfig.class
+com/huaweicloud/sermant/router/common/utils/CollectionUtils.class
