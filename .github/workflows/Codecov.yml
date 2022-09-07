@@ -30,8 +30,8 @@ jobs:
         with:
           paths: ${{ github.workspace }}/sermant-agentcore/sermant-agentcore-core/target/jacoco-report/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 11
-          min-coverage-changed-files: 11
+          min-coverage-overall: 10
+          min-coverage-changed-files: 10
 #          debug-mode: true
 #      - name: config codecov
 #        run: |
