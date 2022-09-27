@@ -40,8 +40,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -51,18 +53,16 @@ import java.util.Collections;
  * @author zhouss
  * @since 2022-08-31
  */
+@RunWith(MockitoJUnitRunner.class)
 public class AlibabaDubboInvokerInterceptorTest {
     private MockedStatic<PluginConfigManager> pluginConfigManagerMockedStatic;
 
     private MockedStatic<ServiceManager> serviceManagerMockedStatic;
 
-    private MockedStatic<OperationManager> operationManagerMockedStatic;
-
     @After
     public void tearDown() {
         pluginConfigManagerMockedStatic.close();
         serviceManagerMockedStatic.close();
-        operationManagerMockedStatic.close();
     }
 
     /**
@@ -77,18 +77,19 @@ public class AlibabaDubboInvokerInterceptorTest {
         pluginConfigManagerMockedStatic.when(() -> PluginConfigManager.getPluginConfig(FlowControlConfig.class))
                 .thenReturn(new FlowControlConfig());
         serviceManagerMockedStatic = Mockito.mockStatic(ServiceManager.class);
-        operationManagerMockedStatic = Mockito.mockStatic(OperationManager.class);
-        operationManagerMockedStatic.when(() -> OperationManager.getOperation(YamlConverter.class)).thenReturn(new YamlConverterImpl());
     }
 
     @Test
     public void test() throws NoSuchMethodException {
-        final AlibabaDubboInvokerInterceptor interceptor = new AlibabaDubboInvokerInterceptor();
-        final ExecuteContext executeContext = buildContext();
-        interceptor.doBefore(executeContext);
-        interceptor.doAfter(executeContext);
-        Assert.assertTrue(executeContext.getResult() instanceof RpcResult);
-        Assert.assertEquals(((RpcResult) executeContext.getResult()).getValue(), getResult());
+        try (MockedStatic<OperationManager> operationManagerMockedStatic = Mockito.mockStatic(OperationManager.class)) {
+            operationManagerMockedStatic.when(() -> OperationManager.getOperation(YamlConverter.class)).thenReturn(new YamlConverterImpl());
+            final AlibabaDubboInvokerInterceptor interceptor = new AlibabaDubboInvokerInterceptor();
+            final ExecuteContext executeContext = buildContext();
+            interceptor.doBefore(executeContext);
+            interceptor.doAfter(executeContext);
+            Assert.assertTrue(executeContext.getResult() instanceof RpcResult);
+            Assert.assertEquals(((RpcResult) executeContext.getResult()).getValue(), getResult());
+        }
     }
 
     private ExecuteContext buildContext() throws NoSuchMethodException {

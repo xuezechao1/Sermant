@@ -19,10 +19,18 @@ package com.huawei.fowcontrol.res4j.chain;
 
 import com.huawei.fowcontrol.res4j.chain.handler.MonitorHandler;
 import com.huawei.fowcontrol.res4j.service.ServiceCollectorService;
-import com.huaweicloud.sermant.core.utils.ReflectUtils;
 
+import com.huaweicloud.sermant.core.operation.OperationManager;
+import com.huaweicloud.sermant.core.operation.converter.api.YamlConverter;
+import com.huaweicloud.sermant.core.utils.ReflectUtils;
+import com.huaweicloud.sermant.implement.operation.converter.YamlConverterImpl;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +43,14 @@ import java.util.Optional;
  */
 public class HandlerChainBuilderTest {
     private static final String FIELD_NAME = "HANDLERS";
+
+    private MockedStatic<OperationManager> operationManagerMockedStatic;
+
+    @Before
+    public void setUp() {
+        operationManagerMockedStatic = Mockito.mockStatic(OperationManager.class);
+        operationManagerMockedStatic.when(() -> OperationManager.getOperation(YamlConverter.class)).thenReturn(new YamlConverterImpl());
+    }
 
     /**
      * 构建链，确定handler数量
@@ -77,5 +93,10 @@ public class HandlerChainBuilderTest {
         Assert.assertTrue(castFlag);
         List<?> handlerList = (List<?>) optional.get();
         Assert.assertTrue(handlerList.size() > 0);
+    }
+
+    @After
+    public void clean() {
+        operationManagerMockedStatic.close();
     }
 }

@@ -54,13 +54,10 @@ public class ApacheDubboClusterInvokerTest {
 
     private MockedStatic<ServiceManager> serviceManagerMockedStatic;
 
-    private MockedStatic<OperationManager> operationManagerMockedStatic;
-
     @After
     public void tearDown() {
         pluginConfigManagerMockedStatic.close();
         serviceManagerMockedStatic.close();
-        operationManagerMockedStatic.close();
     }
 
     /**
@@ -74,44 +71,45 @@ public class ApacheDubboClusterInvokerTest {
                 .mockStatic(PluginConfigManager.class);
         pluginConfigManagerMockedStatic.when(() -> PluginConfigManager.getPluginConfig(FlowControlConfig.class))
                 .thenReturn(new FlowControlConfig());
-        operationManagerMockedStatic = Mockito.mockStatic(OperationManager.class);
-        operationManagerMockedStatic.when(() -> OperationManager.getOperation(YamlConverter.class)).thenReturn(new YamlConverterImpl());
         serviceManagerMockedStatic = Mockito.mockStatic(ServiceManager.class);
     }
 
     @Test
     public void doInvoke() {
-        final Directory<Result> directory = Mockito.mock(Directory.class);
-        Mockito.when(directory.getUrl()).thenReturn(new URL("dubbo", "localhost", 8080));
-        final ApacheDubboClusterInvoker<Result> clusterInvoker = new ApacheDubboClusterInvoker<>(directory);
-        final RoundRobinLoadBalance roundRobinLoadBalance = new RoundRobinLoadBalance();
-        final Invocation invocation = Mockito.mock(Invocation.class);
-        String interfaceName = this.getClass().getName();
-        String version = "1.0.0";
-        Mockito.when(invocation.getMethodName()).thenReturn("test");
-        Mockito.when(invocation.getAttachment(ConvertUtils.DUBBO_ATTACHMENT_VERSION)).thenReturn(version);
-        Mockito.when(invocation.getArguments()).thenReturn(new Object[]{"test"});
-        final Invoker invoker = Mockito.mock(Invoker.class);
-        Mockito.when(invoker.getInterface()).thenReturn(this.getClass());
-        final URL url = Mockito.mock(URL.class);
-        Mockito.when(url.getParameter(CommonConst.GENERIC_INTERFACE_KEY, interfaceName)).thenReturn(interfaceName);
-        Mockito.when(url.getParameter(CommonConst.URL_VERSION_KEY, version)).thenReturn(version);
-        Mockito.when(url.getParameter(CommonConst.DUBBO_REMOTE_APPLICATION)).thenReturn("application");
-        Mockito.when(invoker.getUrl()).thenReturn(url);
-        Mockito.when(invocation.getInvoker()).thenReturn(invoker);
-        Mockito.when(directory.getUrl()).thenReturn(url);
-        final AsyncRpcResult asyncRpcResult = AsyncRpcResult.newDefaultAsyncResult(new Object(), invocation);
-        Mockito.when(invoker.invoke(invocation)).thenReturn(asyncRpcResult);
-        final Result result = clusterInvoker.doInvoke(invocation, Arrays.asList(invoker), roundRobinLoadBalance);
-        Assert.assertEquals(result, asyncRpcResult);
-        // 测试抛出异常
-        Mockito.when(invoker.invoke(invocation)).thenThrow(new RpcException("test error"));
-        boolean isEx = false;
-        try {
-            clusterInvoker.doInvoke(invocation, Arrays.asList(invoker), roundRobinLoadBalance);
-        } catch (RpcException ex) {
-            isEx = true;
+        try (MockedStatic<OperationManager> operationManagerMockedStatic = Mockito.mockStatic(OperationManager.class)) {
+            operationManagerMockedStatic.when(() -> OperationManager.getOperation(YamlConverter.class)).thenReturn(new YamlConverterImpl());
+            final Directory<Result> directory = Mockito.mock(Directory.class);
+            Mockito.when(directory.getUrl()).thenReturn(new URL("dubbo", "localhost", 8080));
+            final ApacheDubboClusterInvoker<Result> clusterInvoker = new ApacheDubboClusterInvoker<>(directory);
+            final RoundRobinLoadBalance roundRobinLoadBalance = new RoundRobinLoadBalance();
+            final Invocation invocation = Mockito.mock(Invocation.class);
+            String interfaceName = this.getClass().getName();
+            String version = "1.0.0";
+            Mockito.when(invocation.getMethodName()).thenReturn("test");
+            Mockito.when(invocation.getAttachment(ConvertUtils.DUBBO_ATTACHMENT_VERSION)).thenReturn(version);
+            Mockito.when(invocation.getArguments()).thenReturn(new Object[]{"test"});
+            final Invoker invoker = Mockito.mock(Invoker.class);
+            Mockito.when(invoker.getInterface()).thenReturn(this.getClass());
+            final URL url = Mockito.mock(URL.class);
+            Mockito.when(url.getParameter(CommonConst.GENERIC_INTERFACE_KEY, interfaceName)).thenReturn(interfaceName);
+            Mockito.when(url.getParameter(CommonConst.URL_VERSION_KEY, version)).thenReturn(version);
+            Mockito.when(url.getParameter(CommonConst.DUBBO_REMOTE_APPLICATION)).thenReturn("application");
+            Mockito.when(invoker.getUrl()).thenReturn(url);
+            Mockito.when(invocation.getInvoker()).thenReturn(invoker);
+            Mockito.when(directory.getUrl()).thenReturn(url);
+            final AsyncRpcResult asyncRpcResult = AsyncRpcResult.newDefaultAsyncResult(new Object(), invocation);
+            Mockito.when(invoker.invoke(invocation)).thenReturn(asyncRpcResult);
+            final Result result = clusterInvoker.doInvoke(invocation, Arrays.asList(invoker), roundRobinLoadBalance);
+            Assert.assertEquals(result, asyncRpcResult);
+            // 测试抛出异常
+            Mockito.when(invoker.invoke(invocation)).thenThrow(new RpcException("test error"));
+            boolean isEx = false;
+            try {
+                clusterInvoker.doInvoke(invocation, Arrays.asList(invoker), roundRobinLoadBalance);
+            } catch (RpcException ex) {
+                isEx = true;
+            }
+            Assert.assertTrue(isEx);
         }
-        Assert.assertTrue(isEx);
     }
 }
