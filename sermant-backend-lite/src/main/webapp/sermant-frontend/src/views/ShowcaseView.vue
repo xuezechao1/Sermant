@@ -1,18 +1,39 @@
 <template>
-  <div style="width: 80%; height: 100%">
-    <div style="text-align: center">
-      <button ref="zookeeper" class="bar" :height="100">zookeeper</button>
+  <div style="width: 80%; height: 100%; float: left">
+    <div style="text-align: center; margin: 100px">
+      <div>
+        <img src="../assets/svg/Link.svg" ref="zookeeper" class="bar" />
+        <p style="margin: 0px">注册中心</p>
+      </div>
     </div>
-    <div>
-      <button style="float: left" ref="consumer" class="bar" :height="100">
-        Consumer
-      </button>
-      <button style="float: right" ref="provider" class="bar" :height="100">
-        Provider
-      </button>
+    <div style="margin: 100px">
+      <div style="float: left; margin: 50px">
+        <img src="../assets/svg/Web.svg" class="bar" ref="consumer" />
+        <p style="margin: 0px">Consumer</p>
+      </div>
+      <div style="float: right; margin: 50px">
+        <img src="../assets/svg/server.svg" class="bar" ref="provider" />
+        <p style="margin: 0px">Provider</p>
+      </div>
     </div>
-    <div style="text-align: center; clear: both">
-      <button ref="gateway" class="bar" :height="100">Gateway</button>
+    <div style="text-align: center; clear: both; margin: 100px">
+      <div style="margin: 50px">
+        <img src="../assets/svg/httpdns.svg" ref="gateway" class="bar" />
+        <p style="margin: 0px">网关</p>
+      </div>
+      <div style="float: right; margin: 50px">
+        <img src="../assets/svg/server.svg" class="bar" ref="providerB" />
+        <p style="margin: 0px">其他服务</p>
+      </div>
+    </div>
+  </div>
+  <div style="width: 20%; height: inherit; float: right; overflow: auto" v-scrollBottom>
+    <div v-for="item in events" style="margin: 5px">
+      <el-alert
+        title="item.timeStamp"
+        description="This is a description."
+        :closable="false"
+      />
     </div>
   </div>
 </template>
@@ -31,8 +52,10 @@ export default {
       consumerToProviderLine: null,
       consumerToGatewayLine: null,
       gatewayToProviderLine: null,
+      gatewayToProviderBLine: null,
       timer: null,
       flag: true,
+      events: [],
     };
   },
   mounted() {
@@ -40,9 +63,22 @@ export default {
     this.drawConsumerToProviderLine();
     this.drawConsumerToZookeeperLine();
     this.drawGatewayToProviderLine();
+    this.drawGatewayToProviderBLine();
     this.drawProviderToZookeeperLine();
+    // 检查注册状态
+    axios.get(`${window.location.origin}/getMessage`).then((res) => {
+      if (res.data.consumer.status) {
+        this.consumerToZookeeperLine.show("draw");
+      }
+      if (res.data.consumer.status) {
+        this.providerToZookeeperLine.show("draw");
+      }
+    });
   },
   methods: {
+    addEvent(event) {
+      this.events.push(event);
+    },
     drawConsumerToZookeeperLine() {
       this.consumerToZookeeperLine = LeaderLine.setLine(
         this.$refs.consumer,
@@ -85,7 +121,7 @@ export default {
           gradient: true,
           hide: true,
           dash: { animation: true },
-          size: 10
+          size: 10,
         }
       );
     },
@@ -101,7 +137,7 @@ export default {
           gradient: true,
           hide: true,
           dash: { animation: true },
-          size: 10
+          size: 10,
         }
       );
     },
@@ -117,13 +153,33 @@ export default {
           gradient: true,
           hide: true,
           dash: { animation: true },
-          size: 10
+          size: 10,
         }
       );
     },
-    dealWithGateway() {
+    drawGatewayToProviderBLine() {
+      this.gatewayToProviderBLine = LeaderLine.setLine(
+        this.$refs.gateway,
+        this.$refs.providerB,
+        {
+          startSocket: "right",
+          endSocket: "left",
+          path: "fluid",
+          color: "#33CCCC",
+          gradient: true,
+          hide: true,
+          dash: { animation: true },
+          size: 10,
+        }
+      );
+    },
+    dealWithGateway(destinationWithSermant) {
       this.consumerToGatewayLine.show();
-      this.gatewayToProviderLine.show();
+      if (destinationWithSermant) {
+        this.gatewayToProviderLine.show();
+      } else {
+        this.gatewayToProviderBLine.show();
+      }
     },
     dealWithSermant() {
       this.consumerToProviderLine.show();
@@ -131,11 +187,13 @@ export default {
     hideAllLine() {
       this.consumerToGatewayLine.hide();
       this.gatewayToProviderLine.hide();
+      this.gatewayToProviderBLine.hide();
       this.consumerToProviderLine.hide();
     },
     showAllLine() {
       this.consumerToGatewayLine.show();
       this.gatewayToProviderLine.show();
+      this.gatewayToProviderBLine.show();
       this.consumerToProviderLine.show();
       this.consumerToZookeeperLine.show("draw");
       this.providerToZookeeperLine.show("draw");
@@ -147,31 +205,46 @@ export default {
       });
     },
     newRequest() {
-    //   this.showEvent("aaaa", "bbbbbbbbbb");
     //   this.showAllLine();
       axios.get(`${window.location.origin}/getMessage`).then((res) => {
         if (res.data == null) {
           return;
         }
+        // 处理请求数据
         if (res.data.eventType == "request") {
           if (res.data.eventType.isEnhance) {
-            this.showEvent(res.data.timeStamp,res.data.description);
+            this.showEvent(res.data.timeStamp, res.data.description);
             this.dealWithSermant();
           } else {
-            this.showEvent(res.data.timeStamp,res.data.description);
-            this.dealWithGateway();
+            this.showEvent(res.data.timeStamp, res.data.description);
+            this.dealWithGateway(res.data.destinationWithSermant);
           }
-        } else if (res.data.eventType == "registry") {
+          return;
+        }
+        // 处理注册
+        if (res.data.eventType == "register") {
           if (res.data.role == "consumer") {
-            this.showEvent(res.data.timeStamp,res.data.description);
+            this.showEvent(res.data.timeStamp, res.data.description);
             this.consumerToZookeeperLine.show("draw");
           } else {
-            this.showEvent(res.data.timeStamp,res.data.description);
+            this.showEvent(res.data.timeStamp, res.data.description);
             this.providerToZookeeperLine.show("draw");
           }
+          return;
+        }
+        // 处理取消注册
+        if (res.data.eventType == "unRegister") {
+          if (res.data.role == "consumer") {
+            this.showEvent(res.data.timeStamp, res.data.description);
+            this.consumerToZookeeperLine.hide("draw");
+          } else {
+            this.showEvent(res.data.timeStamp, res.data.description);
+            this.providerToZookeeperLine.hide("draw");
+          }
+          return;
         }
       });
-    //   this.hideAllLine();
+      this.hideAllLine();
     },
   },
   created() {
@@ -190,13 +263,11 @@ export default {
 
 <style lang="less" scoped>
 .bar {
-  background-color: teal;
-  border: none;
-  font-size: 20px;
-  color: #ffffff;
-  border-radius: 10px;
-  margin: 100px;
-  height: 50px;
-  width: 150px;
+  height: 75px;
+  width: 75px;
+}
+.container {
+  height: 100px;
+  width: 100px;
 }
 </style>
