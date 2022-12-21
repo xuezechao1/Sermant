@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%">
+  <div style="width: 80%; height: 100%">
     <div style="text-align: center">
       <button ref="zookeeper" class="bar" :height="100">zookeeper</button>
     </div>
@@ -21,6 +21,8 @@
 import interact from "interactjs";
 import LeaderLine from "leader-line-vue";
 import axios from "axios";
+import { h } from "vue";
+import { ElNotification } from "element-plus";
 export default {
   data() {
     return {
@@ -30,7 +32,7 @@ export default {
       consumerToGatewayLine: null,
       gatewayToProviderLine: null,
       timer: null,
-      flag:true
+      flag: true,
     };
   },
   mounted() {
@@ -49,9 +51,9 @@ export default {
           startSocket: "top",
           endSocket: "left",
           path: "fluid",
-          startPlugColor: "#ff3792",
-          endPlugColor: "#fff386",
+          color: "#999999",
           gradient: true,
+          hide: true,
         }
       );
     },
@@ -63,9 +65,9 @@ export default {
           startSocket: "top",
           endSocket: "right",
           path: "fluid",
-          startPlugColor: "#ff3792",
-          endPlugColor: "#fff386",
+          color: "#999999",
           gradient: true,
+          hide: true,
         }
       );
     },
@@ -79,11 +81,11 @@ export default {
           startSocketGravity: [270, -300],
           endSocketGravity: [-300, -270],
           path: "fluid",
-          startPlugColor: "#ff3792",
-          endPlugColor: "#fff386",
+          color: "#339900",
           gradient: true,
-          hide:true,
+          hide: true,
           dash: { animation: true },
+          size: 10
         }
       );
     },
@@ -95,11 +97,11 @@ export default {
           startSocket: "bottom",
           endSocket: "left",
           path: "fluid",
-          startPlugColor: "#ff3792",
-          endPlugColor: "#fff386",
+          color: "#33CCCC",
           gradient: true,
-          hide:true,
+          hide: true,
           dash: { animation: true },
+          size: 10
         }
       );
     },
@@ -111,53 +113,76 @@ export default {
           startSocket: "right",
           endSocket: "bottom",
           path: "fluid",
-          startPlugColor: "#ff3792",
-          endPlugColor: "#fff386",
+          color: "#33CCCC",
           gradient: true,
-          hide:true,
+          hide: true,
           dash: { animation: true },
+          size: 10
         }
       );
     },
-    dealWithGateway(){
-        this.consumerToGatewayLine.show();
-        this.gatewayToProviderLine.show();
+    dealWithGateway() {
+      this.consumerToGatewayLine.show();
+      this.gatewayToProviderLine.show();
     },
-    dealWithSermant(){
-        this.consumerToProviderLine.show();
+    dealWithSermant() {
+      this.consumerToProviderLine.show();
     },
-    newRequest(){
-        this.consumerToGatewayLine.hide();
-        this.gatewayToProviderLine.hide();
-        this.consumerToProviderLine.hide();
-        const res = axios.get(`${window.location.origin}/getMessage`);
-        if(res.data == null){   
-            return;
+    hideAllLine() {
+      this.consumerToGatewayLine.hide();
+      this.gatewayToProviderLine.hide();
+      this.consumerToProviderLine.hide();
+    },
+    showAllLine() {
+      this.consumerToGatewayLine.show();
+      this.gatewayToProviderLine.show();
+      this.consumerToProviderLine.show();
+      this.consumerToZookeeperLine.show("draw");
+      this.providerToZookeeperLine.show("draw");
+    },
+    showEvent(title, description) {
+      ElNotification({
+        title: title,
+        message: h("i", { style: "color: teal" }, description),
+      });
+    },
+    newRequest() {
+    //   this.showEvent("aaaa", "bbbbbbbbbb");
+    //   this.showAllLine();
+      axios.get(`${window.location.origin}/getMessage`).then((res) => {
+        if (res.data == null) {
+          return;
         }
-        if(res.data.eventType == 'request'){
-            if(res.data.eventType.enhance){
-                this.dealWithSermant();
-            }else{
-                this.dealWithGateway();
-            }
-        }else if(res.data.eventType == 'registry'){
-            if(res.data.role == 'consumer'){
-                this.consumerToZookeeperLine.show();
-            }else{
-                this.providerToZookeeperLine.show();
-            }
+        if (res.data.eventType == "request") {
+          if (res.data.eventType.isEnhance) {
+            this.showEvent(res.data.timeStamp,res.data.description);
+            this.dealWithSermant();
+          } else {
+            this.showEvent(res.data.timeStamp,res.data.description);
+            this.dealWithGateway();
+          }
+        } else if (res.data.eventType == "registry") {
+          if (res.data.role == "consumer") {
+            this.showEvent(res.data.timeStamp,res.data.description);
+            this.consumerToZookeeperLine.show("draw");
+          } else {
+            this.showEvent(res.data.timeStamp,res.data.description);
+            this.providerToZookeeperLine.show("draw");
+          }
         }
-    }
+      });
+    //   this.hideAllLine();
+    },
   },
   created() {
     this.timer = setInterval(() => {
-        this.newRequest();
+      this.newRequest();
     }, 500);
   },
   beforeDestroy() {
-    if(this.timer){
-        clearInterval(this.timer);
-        this.timer = null;
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
     }
   },
 };
@@ -165,7 +190,10 @@ export default {
 
 <style lang="less" scoped>
 .bar {
-  background-color: #0068e6;
+  background-color: teal;
+  border: none;
+  font-size: 20px;
+  color: #ffffff;
   border-radius: 10px;
   margin: 100px;
   height: 50px;
