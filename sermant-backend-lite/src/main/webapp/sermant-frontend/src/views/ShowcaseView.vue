@@ -9,21 +9,21 @@
     <div style="margin: 100px">
       <div style="float: left; margin: 50px">
         <img src="../assets/svg/Web.svg" class="bar" ref="consumer" />
-        <p style="margin: 0px">{{ consumer }}</p>
+        <p style="margin: 0px;word-break: break-all;width:120px">{{ consumer }}</p>
       </div>
       <div style="float: right; margin: 50px">
         <img src="../assets/svg/server.svg" class="bar" ref="provider" />
-        <p style="margin: 0px">{{ provider }}</p>
+        <p style="margin: 0px;word-break: break-all;width:120px">{{ provider }}</p>
       </div>
     </div>
     <div style="text-align: center; clear: both; margin: 100px">
       <div style="margin: 50px">
         <img src="../assets/svg/httpdns.svg" ref="gateway" class="bar" />
-        <p style="margin: 0px">网关</p>
+        <p style="margin: 0px">总线</p>
       </div>
       <div style="float: right; margin: 50px">
         <img src="../assets/svg/server.svg" class="bar" ref="providerB" />
-        <p style="margin: 0px">其他服务</p>
+        <p style="margin: 0px;width:120px">其他服务</p>
       </div>
     </div>
   </div>
@@ -31,10 +31,16 @@
     <div v-for="item in events" style="margin: 5px">
       <el-card class="box-card">
         <div class="card-header">
-          <span style="fontweight: 900">{{ item.timeStamp }}</span>
+          <span style="font-weight: 900">{{ item.timeStamp }}</span>
         </div>
+        <p v-if=item.isEnhance style="font-weight: 900;color: #FF0000; margin: 5 px; width: 100%; word-break: break-all">
+          当前流量走注册发现架构
+        </p>
+        <p v-if=!item.isEnhance style="font-weight: 900;color: #FF0000; margin: 5 px; width: 100%; word-break: break-all">
+          当前流量走MO总线架构
+        </p>
         <p style="color: teal; margin: 5 px; width: 100%; word-break: break-all">
-          {{ item.destination }}
+          URL: {{ item.destination }}
         </p>
       </el-card>
     </div>
@@ -50,8 +56,8 @@ import { ElNotification } from "element-plus";
 export default {
   data() {
     return {
-      consumer: "Consumer",
-      provider: "Provider",
+      consumer: "MOSMService",
+      provider: "MODataStrategyEngineService",
       consumerToZookeeperLine: null,
       providerToZookeeperLine: null,
       consumerToProviderLine: null,
@@ -300,18 +306,18 @@ export default {
       this.gatewayToProviderBLink.show("draw");
     },
     newRequest() {
-      this.showAllLine();
+      // this.showAllLine();
       // this.switchGatewayAndZk(this.isZookeeper);
       // this.isZookeeper = !this.isZookeeper;
       // 检查注册状态
       axios.get(`${window.location.origin}/getInstanceStatus`).then((res) => {
         if (res.data.consumer.status) {
           this.consumerToZookeeperLine.show("draw");
-          this.consumer = res.data.consumer.serviceName;
+          // this.consumer = res.data.consumer.serviceName;
         }
         if (res.data.provider.status) {
           this.providerToZookeeperLine.show("draw");
-          this.provider = res.data.consumer.provider;
+          // this.provider = res.data.consumer.provider;
         }
         this.switchGatewayAndZk(res.data.zkOrGw);
       });
@@ -354,7 +360,7 @@ export default {
   created() {
     this.timer = setInterval(() => {
       this.newRequest();
-    }, 2000);
+    }, 100);
     this.clearTimer = setInterval(() => {
       if (this.consumerToProviderLineFlag > 0) {
         this.consumerToProviderLineFlag = this.consumerToProviderLineFlag - 1;
