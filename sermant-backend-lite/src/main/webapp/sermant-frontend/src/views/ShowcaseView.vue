@@ -9,11 +9,11 @@
     <div style="margin: 100px">
       <div style="float: left; margin: 50px">
         <img src="../assets/svg/Web.svg" class="bar" ref="consumer" />
-        <p style="margin: 0px">Consumer</p>
+        <p style="margin: 0px">{{ consumer }}</p>
       </div>
       <div style="float: right; margin: 50px">
         <img src="../assets/svg/server.svg" class="bar" ref="provider" />
-        <p style="margin: 0px">Provider</p>
+        <p style="margin: 0px">{{ provider }}</p>
       </div>
     </div>
     <div style="text-align: center; clear: both; margin: 100px">
@@ -29,11 +29,14 @@
   </div>
   <div style="width: 20%; height: inherit; float: right; overflow: auto" v-scrollBottom>
     <div v-for="item in events" style="margin: 5px">
-      <el-alert
-        title="item.timeStamp"
-        description="This is a description."
-        :closable="false"
-      />
+      <el-card class="box-card">
+        <div class="card-header">
+          <span style="fontweight: 900">{{ item.timeStamp }}</span>
+        </div>
+        <p style="color: teal; margin: 5 px; width: 100%; word-break: break-all">
+          {{ item.destination }}
+        </p>
+      </el-card>
     </div>
   </div>
 </template>
@@ -47,36 +50,44 @@ import { ElNotification } from "element-plus";
 export default {
   data() {
     return {
+      consumer: "Consumer",
+      provider: "Provider",
       consumerToZookeeperLine: null,
       providerToZookeeperLine: null,
       consumerToProviderLine: null,
       consumerToGatewayLine: null,
       gatewayToProviderLine: null,
       gatewayToProviderBLine: null,
+      // 连接示意线
+      consumerToProviderLink: null,
+      consumerToGatewayLink: null,
+      gatewayToProviderLink: null,
+      gatewayToProviderBLink: null,
       timer: null,
       flag: true,
+      isZookeeper: true,
       events: [],
     };
   },
   mounted() {
+    // 绘制连接示意线
+    this.drawConsumerToProviderLink();
+    this.drawConsumerToGatewayLink();
+    this.drawGatewayToProviderLink();
+    this.drawGatewayToProviderBLink();
+    // 绘制流量示意线
     this.drawConsumerToGatewayLine();
     this.drawConsumerToProviderLine();
     this.drawConsumerToZookeeperLine();
     this.drawGatewayToProviderLine();
     this.drawGatewayToProviderBLine();
     this.drawProviderToZookeeperLine();
-    // 检查注册状态
-    axios.get(`${window.location.origin}/getMessage`).then((res) => {
-      if (res.data.consumer.status) {
-        this.consumerToZookeeperLine.show("draw");
-      }
-      if (res.data.consumer.status) {
-        this.providerToZookeeperLine.show("draw");
-      }
-    });
   },
   methods: {
     addEvent(event) {
+      if (this.events.length >= 5) {
+        this.events.shift();
+      }
       this.events.push(event);
     },
     drawConsumerToZookeeperLine() {
@@ -90,6 +101,7 @@ export default {
           color: "#999999",
           gradient: true,
           hide: true,
+          dash: true,
         }
       );
     },
@@ -104,6 +116,7 @@ export default {
           color: "#999999",
           gradient: true,
           hide: true,
+          dash: true,
         }
       );
     },
@@ -173,12 +186,85 @@ export default {
         }
       );
     },
+    // 示意线绘图
+    drawConsumerToProviderLink() {
+      this.consumerToProviderLink = LeaderLine.setLine(
+        this.$refs.consumer,
+        this.$refs.provider,
+        {
+          startSocket: "right",
+          endSocket: "left",
+          startSocketGravity: [270, -300],
+          endSocketGravity: [-300, -270],
+          path: "fluid",
+          color: "#999999",
+          gradient: true,
+          hide: true,
+          dash: true,
+        }
+      );
+    },
+    drawConsumerToGatewayLink() {
+      this.consumerToGatewayLink = LeaderLine.setLine(
+        this.$refs.consumer,
+        this.$refs.gateway,
+        {
+          startSocket: "bottom",
+          endSocket: "left",
+          path: "fluid",
+          color: "#999999",
+          gradient: true,
+          hide: true,
+          dash: true,
+        }
+      );
+    },
+    drawGatewayToProviderLink() {
+      this.gatewayToProviderLink = LeaderLine.setLine(
+        this.$refs.gateway,
+        this.$refs.provider,
+        {
+          startSocket: "right",
+          endSocket: "bottom",
+          path: "fluid",
+          color: "#999999",
+          gradient: true,
+          hide: true,
+          dash: true,
+        }
+      );
+    },
+    drawGatewayToProviderBLink() {
+      this.gatewayToProviderBLink = LeaderLine.setLine(
+        this.$refs.gateway,
+        this.$refs.providerB,
+        {
+          startSocket: "right",
+          endSocket: "left",
+          path: "fluid",
+          color: "#999999",
+          gradient: true,
+          hide: true,
+          dash: true,
+        }
+      );
+    },
+    // 线条处理逻辑
     dealWithGateway(destinationWithSermant) {
       this.consumerToGatewayLine.show();
       if (destinationWithSermant) {
         this.gatewayToProviderLine.show();
       } else {
         this.gatewayToProviderBLine.show();
+      }
+    },
+    switchGatewayAndZk(isZookeeper) {
+      if (isZookeeper) {
+        this.gatewayToProviderLink.hide("draw");
+        this.consumerToProviderLink.show("draw");
+      } else {
+        this.consumerToProviderLink.hide("draw");
+        this.gatewayToProviderLink.show("draw");
       }
     },
     dealWithSermant() {
@@ -191,32 +277,42 @@ export default {
       this.consumerToProviderLine.hide();
     },
     showAllLine() {
-      this.consumerToGatewayLine.show();
-      this.gatewayToProviderLine.show();
-      this.gatewayToProviderBLine.show();
-      this.consumerToProviderLine.show();
+      // this.consumerToGatewayLine.show();
+      // this.gatewayToProviderLine.show();
+      // this.gatewayToProviderBLine.show();
+      // this.consumerToProviderLine.show();
       this.consumerToZookeeperLine.show("draw");
       this.providerToZookeeperLine.show("draw");
-    },
-    showEvent(title, description) {
-      ElNotification({
-        title: title,
-        message: h("i", { style: "color: teal" }, description),
-      });
+      this.consumerToGatewayLink.show("draw");
+      this.gatewayToProviderBLink.show("draw");
     },
     newRequest() {
-    //   this.showAllLine();
+      // this.showAllLine();
+      // this.switchGatewayAndZk(this.isZookeeper);
+      // this.isZookeeper = !this.isZookeeper;
+      // 检查注册状态
+      axios.get(`${window.location.origin}/getInstanceStatus`).then((res) => {
+        if (res.data.consumer.status) {
+          this.consumerToZookeeperLine.show("draw");
+          this.consumer = res.data.consumer.serviceName;
+        }
+        if (res.data.provider.status) {
+          this.providerToZookeeperLine.show("draw");
+          this.provider = res.data.consumer.provider;
+        }
+        this.switchGatewayAndZk(res.data.zkOrGw);
+      });
+      // 获取事件
       axios.get(`${window.location.origin}/getMessage`).then((res) => {
         if (res.data == null) {
           return;
         }
         // 处理请求数据
         if (res.data.eventType == "request") {
-          if (res.data.eventType.isEnhance) {
-            this.showEvent(res.data.timeStamp, res.data.description);
+          this.addEvent(res.data);
+          if (res.data.isEnhance) {
             this.dealWithSermant();
           } else {
-            this.showEvent(res.data.timeStamp, res.data.description);
             this.dealWithGateway(res.data.destinationWithSermant);
           }
           return;
@@ -224,10 +320,8 @@ export default {
         // 处理注册
         if (res.data.eventType == "register") {
           if (res.data.role == "consumer") {
-            this.showEvent(res.data.timeStamp, res.data.description);
             this.consumerToZookeeperLine.show("draw");
           } else {
-            this.showEvent(res.data.timeStamp, res.data.description);
             this.providerToZookeeperLine.show("draw");
           }
           return;
@@ -235,10 +329,8 @@ export default {
         // 处理取消注册
         if (res.data.eventType == "unRegister") {
           if (res.data.role == "consumer") {
-            this.showEvent(res.data.timeStamp, res.data.description);
             this.consumerToZookeeperLine.hide("draw");
           } else {
-            this.showEvent(res.data.timeStamp, res.data.description);
             this.providerToZookeeperLine.hide("draw");
           }
           return;
