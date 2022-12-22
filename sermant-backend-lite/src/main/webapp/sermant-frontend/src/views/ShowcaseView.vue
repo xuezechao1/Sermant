@@ -3,7 +3,7 @@
     <div style="text-align: center; margin: 100px">
       <div>
         <img src="../assets/svg/Link.svg" ref="zookeeper" class="bar" />
-        <p style="margin: 0px">注册中心</p>
+        <p style="margin: 0px">Zookeeper</p>
       </div>
     </div>
     <div style="margin: 100px">
@@ -18,8 +18,8 @@
     </div>
     <div style="text-align: center; clear: both; margin: 100px">
       <div style="margin: 50px">
-        <img src="../assets/svg/httpdns.svg" ref="gateway" class="bar" />
-        <p style="margin: 0px">总线</p>
+        <img src="../assets/svg/Hosting.svg" ref="gateway" class="bar" />
+        <p style="margin: 0px">HIRO总线</p>
       </div>
       <div style="float: right; margin: 50px">
         <img src="../assets/svg/server.svg" class="bar" ref="providerB" />
@@ -33,11 +33,11 @@
         <div class="card-header">
           <span style="font-weight: 900">{{ item.timeStamp }}</span>
         </div>
-        <p v-if=item.isEnhance style="font-weight: 900;color: #FF0000; margin: 5 px; width: 100%; word-break: break-all">
-          当前流量走注册发现架构
+        <p v-if=item.isEnhance style="font-weight: 900;color: #339900; margin: 5 px; width: 100%; word-break: break-all">
+          流量通道：Zookeeper
         </p>
         <p v-if=!item.isEnhance style="font-weight: 900;color: #FF0000; margin: 5 px; width: 100%; word-break: break-all">
-          当前流量走MO总线架构
+          流量通道：HIRO总线
         </p>
         <p style="color: teal; margin: 5 px; width: 100%; word-break: break-all">
           URL: {{ item.destination }}
