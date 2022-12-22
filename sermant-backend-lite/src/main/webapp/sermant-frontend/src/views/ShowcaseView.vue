@@ -63,6 +63,13 @@ export default {
       consumerToGatewayLink: null,
       gatewayToProviderLink: null,
       gatewayToProviderBLink: null,
+      // 流量线清理标记
+      consumerToProviderLineFlag: 2,
+      consumerToGatewayLineFlag: 2,
+      gatewayToProviderLineFlag: 2,
+      gatewayToProviderBLineFlag: 2,
+      // 清理流量线计时器
+      clearTimer: null,
       timer: null,
       flag: true,
       isZookeeper: true,
@@ -214,7 +221,6 @@ export default {
           path: "fluid",
           color: "#999999",
           gradient: true,
-          hide: true,
           dash: true,
         }
       );
@@ -244,7 +250,6 @@ export default {
           path: "fluid",
           color: "#999999",
           gradient: true,
-          hide: true,
           dash: true,
         }
       );
@@ -252,10 +257,13 @@ export default {
     // 线条处理逻辑
     dealWithGateway(destinationWithSermant) {
       this.consumerToGatewayLine.show();
+      this.consumerToGatewayLineFlag = 2;
       if (destinationWithSermant) {
         this.gatewayToProviderLine.show();
+        this.gatewayToProviderLineFlag = 2;
       } else {
         this.gatewayToProviderBLine.show();
+        this.gatewayToProviderBLineFlag = 2;
       }
     },
     switchGatewayAndZk(isZookeeper) {
@@ -269,6 +277,7 @@ export default {
     },
     dealWithSermant() {
       this.consumerToProviderLine.show();
+      this.consumerToProviderLineFlag = 2;
     },
     hideAllLine() {
       this.consumerToGatewayLine.hide();
@@ -277,17 +286,21 @@ export default {
       this.consumerToProviderLine.hide();
     },
     showAllLine() {
-      // this.consumerToGatewayLine.show();
-      // this.gatewayToProviderLine.show();
-      // this.gatewayToProviderBLine.show();
-      // this.consumerToProviderLine.show();
+      this.consumerToGatewayLine.show();
+      this.consumerToGatewayLineFlag = 2;
+      this.gatewayToProviderLine.show();
+      this.gatewayToProviderLineFlag = 2;
+      this.gatewayToProviderBLine.show();
+      this.gatewayToProviderBLineFlag = 2;
+      this.consumerToProviderLine.show();
+      this.consumerToProviderLineFlag = 2;
       this.consumerToZookeeperLine.show("draw");
       this.providerToZookeeperLine.show("draw");
       this.consumerToGatewayLink.show("draw");
       this.gatewayToProviderBLink.show("draw");
     },
     newRequest() {
-      // this.showAllLine();
+      this.showAllLine();
       // this.switchGatewayAndZk(this.isZookeeper);
       // this.isZookeeper = !this.isZookeeper;
       // 检查注册状态
@@ -336,18 +349,41 @@ export default {
           return;
         }
       });
-      this.hideAllLine();
     },
   },
   created() {
     this.timer = setInterval(() => {
       this.newRequest();
+    }, 2000);
+    this.clearTimer = setInterval(() => {
+      if (this.consumerToProviderLineFlag > 0) {
+        this.consumerToProviderLineFlag = this.consumerToProviderLineFlag - 1;
+      } else {
+        this.consumerToProviderLine.hide();
+      }
+      if (this.consumerToGatewayLineFlag > 0) {
+        this.consumerToGatewayLineFlag = this.consumerToGatewayLineFlag - 1;
+      } else {
+        this.consumerToGatewayLine.hide();
+      }
+      if (this.gatewayToProviderLineFlag > 0) {
+        this.gatewayToProviderLineFlag = this.gatewayToProviderLineFlag - 1;
+      } else {
+        this.gatewayToProviderLine.hide();
+      }
+      if (this.gatewayToProviderBLineFlag > 0) {
+        this.gatewayToProviderBLineFlag = this.gatewayToProviderBLineFlag - 1;
+      } else {
+        this.gatewayToProviderBLine.hide();
+      }
     }, 500);
   },
   beforeDestroy() {
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
+      clearInterval(this.clearTimer);
+      clearTimer = null;
     }
   },
 };
