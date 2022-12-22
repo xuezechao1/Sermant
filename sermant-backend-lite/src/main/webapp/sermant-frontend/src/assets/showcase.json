@@ -1,0 +1,7 @@
+{
+    "eventType": "", // 注册时间 和 流量事件
+    "role":"", // provider or consumer
+    "serviceName": "",
+    "ipAddress": "",
+    "isEnhance":"" // 如果sermant处理，走zk就为true，如果不处理为false
+}
