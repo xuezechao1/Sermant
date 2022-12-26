@@ -9,11 +9,11 @@
     <div style="width: 100%; height: 20%">
       <div style="float: left" ref="consumer">
         <img src="../assets/img/webWithSermantB.png" class="bar" style="width:100px" />
-        <p style="margin: 0px; word-break: break-all; width: 75px">{{ consumer }}</p>
+        <p style="margin: 0px; margin-top:15px;word-break: break-all; width: 75px">{{ consumer }}</p>
       </div>
       <div style="float: right" ref="provider">
         <img src="../assets/img/serverWithSermantB.png" class="bar" style="width:100px" />
-        <p style="margin: 0px; word-break: break-all; width: 75px">{{ provider }}</p>
+        <p style="margin: 0px; word-break: break-all; width: 100px">{{ provider }}</p>
       </div>
     </div>
     <div style="text-align: center; clear: both; height: 20%">
@@ -116,7 +116,7 @@ export default {
   },
   methods: {
     addEvent(event) {
-      if (this.events.length >= 5) {
+      if (this.events.length >= 50) {
         this.events.shift();
       }
       this.events.push(event);
