@@ -1,43 +1,61 @@
 <template>
-  <div style="width: 80%; height: 100%; float: left">
-    <div style="text-align: center; margin: 100px">
+  <div style="width: 70%; height: 100%; float: left">
+    <div style="text-align: center; width: 100%; height: 20%; margin: 10px">
       <div>
         <img src="../assets/svg/Link.svg" ref="zookeeper" class="bar" />
         <p style="margin: 0px">Zookeeper</p>
       </div>
     </div>
-    <div style="margin: 100px">
-      <div style="float: left; margin: 50px">
-        <img src="../assets/svg/Web.svg" class="bar" ref="consumer" />
-        <p style="margin: 0px;word-break: break-all;width:120px">{{ consumer }}</p>
+    <div style="width: 100%; height: 20%">
+      <div style="float: left" ref="consumer">
+        <img src="../assets/img/webWithSermant.png" class="bar" style="width:100px" />
+        <p style="margin: 0px; word-break: break-all; width: 75px">{{ consumer }}</p>
       </div>
-      <div style="float: right; margin: 50px">
-        <img src="../assets/svg/server.svg" class="bar" ref="provider" />
-        <p style="margin: 0px;word-break: break-all;width:120px">{{ provider }}</p>
+      <div style="float: right" ref="provider">
+        <img src="../assets/img/serverWithSermant.png" class="bar" style="width:100px" />
+        <p style="margin: 0px; word-break: break-all; width: 75px">{{ provider }}</p>
       </div>
     </div>
-    <div style="text-align: center; clear: both; margin: 100px">
+    <div style="text-align: center; clear: both; height: 20%">
       <div style="margin: 50px">
         <img src="../assets/svg/Hosting.svg" ref="gateway" class="bar" />
         <p style="margin: 0px">HIRO总线</p>
       </div>
-      <div style="float: right; margin: 50px">
+      <div style="float: right">
         <img src="../assets/svg/server.svg" class="bar" ref="providerB" />
-        <p style="margin: 0px;width:120px">其他服务</p>
+        <p style="margin: 0px; width: 75px">其他服务</p>
       </div>
     </div>
   </div>
-  <div style="width: 20%; height: inherit; float: right; overflow: auto" v-scrollBottom>
+  <div style="width: 30%; height: 100%; float: right; overflow: auto" v-scrollBottom>
     <div v-for="item in events" style="margin: 5px">
       <el-card class="box-card">
         <div class="card-header">
           <span style="font-weight: 900">{{ item.timeStamp }}</span>
         </div>
-        <p v-if=item.isEnhance style="font-weight: 900;color: #339900; margin: 5 px; width: 100%; word-break: break-all">
-          流量通道：Zookeeper
+        <p
+          v-if="item.isEnhance"
+          style="
+            font-weight: 900;
+            color: #339900;
+            margin: 5px;
+            width: 100%;
+            word-break: break-all;
+          "
+        >
+          服务注册发现方式：Zookeeper
         </p>
-        <p v-if=!item.isEnhance style="font-weight: 900;color: #FF0000; margin: 5 px; width: 100%; word-break: break-all">
-          流量通道：HIRO总线
+        <p
+          v-if="!item.isEnhance"
+          style="
+            font-weight: 900;
+            color: #ff0000;
+            margin: 5px;
+            width: 100%;
+            word-break: break-all;
+          "
+        >
+          服务注册发现方式：HIRO总线
         </p>
         <p style="color: teal; margin: 5 px; width: 100%; word-break: break-all">
           URL: {{ item.destination }}
@@ -115,6 +133,12 @@ export default {
           gradient: true,
           hide: true,
           dash: true,
+          middleLabel: LeaderLine.obj.captionLabel("注册", {
+            color: "gray",
+            fontSize: 30,
+            offset: [100, 500],
+          }),
+          endPlug: "behind",
         }
       );
     },
@@ -130,6 +154,12 @@ export default {
           gradient: true,
           hide: true,
           dash: true,
+          middleLabel: LeaderLine.obj.captionLabel("注册", {
+            color: "gray",
+            fontSize: 30,
+            offset: [100, 500],
+          }),
+          endPlug: "behind",
         }
       );
     },
@@ -140,8 +170,6 @@ export default {
         {
           startSocket: "right",
           endSocket: "left",
-          startSocketGravity: [270, -300],
-          endSocketGravity: [-300, -270],
           path: "fluid",
           color: "#339900",
           gradient: true,
@@ -207,8 +235,6 @@ export default {
         {
           startSocket: "right",
           endSocket: "left",
-          startSocketGravity: [270, -300],
-          endSocketGravity: [-300, -270],
           path: "fluid",
           color: "#999999",
           gradient: true,
@@ -328,7 +354,9 @@ export default {
         }
         // 处理请求数据
         if (res.data.eventType == "request") {
-          this.addEvent(res.data);
+          if (res.data.destinationWithSermant) {
+            this.addEvent(res.data);
+          }
           if (res.data.isEnhance) {
             this.dealWithSermant();
           } else {
@@ -399,9 +427,5 @@ export default {
 .bar {
   height: 75px;
   width: 75px;
-}
-.container {
-  height: 100px;
-  width: 100px;
 }
 </style>
