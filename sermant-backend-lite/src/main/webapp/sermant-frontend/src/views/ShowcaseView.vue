@@ -8,11 +8,11 @@
     </div>
     <div style="width: 100%; height: 20%">
       <div style="float: left" ref="consumer">
-        <img src="../assets/img/webWithSermant.png" class="bar" style="width:100px" />
+        <img src="../assets/img/webWithSermantB.png" class="bar" style="width:100px" />
         <p style="margin: 0px; word-break: break-all; width: 75px">{{ consumer }}</p>
       </div>
       <div style="float: right" ref="provider">
-        <img src="../assets/img/serverWithSermant.png" class="bar" style="width:100px" />
+        <img src="../assets/img/serverWithSermantB.png" class="bar" style="width:100px" />
         <p style="margin: 0px; word-break: break-all; width: 75px">{{ provider }}</p>
       </div>
     </div>
@@ -22,7 +22,7 @@
         <p style="margin: 0px">HIRO总线</p>
       </div>
       <div style="float: right">
-        <img src="../assets/svg/server.svg" class="bar" ref="providerB" />
+        <img src="../assets/svg/server.svg" class="bar" ref="providerB" style="width:100px;height:100px"/>
         <p style="margin: 0px; width: 75px">其他服务</p>
       </div>
     </div>
@@ -129,14 +129,12 @@ export default {
           startSocket: "top",
           endSocket: "left",
           path: "fluid",
-          color: "#999999",
+          color: "#D8D8BF",
           gradient: true,
           hide: true,
-          dash: true,
-          middleLabel: LeaderLine.obj.captionLabel("注册", {
-            color: "gray",
-            fontSize: 30,
-            offset: [100, 500],
+          // dash: true,
+          middleLabel: LeaderLine.obj.captionLabel("注册到注册中心", {
+            color: "black",
           }),
           endPlug: "behind",
         }
@@ -150,14 +148,12 @@ export default {
           startSocket: "top",
           endSocket: "right",
           path: "fluid",
-          color: "#999999",
+          color: "#D8D8BF",
           gradient: true,
           hide: true,
-          dash: true,
-          middleLabel: LeaderLine.obj.captionLabel("注册", {
-            color: "gray",
-            fontSize: 30,
-            offset: [100, 500],
+          // dash: true,
+          middleLabel: LeaderLine.obj.captionLabel("注册到注册中心", {
+            color: "black",
           }),
           endPlug: "behind",
         }
@@ -170,7 +166,7 @@ export default {
         {
           startSocket: "right",
           endSocket: "left",
-          path: "fluid",
+          path: "straight",
           color: "#339900",
           gradient: true,
           hide: true,
@@ -235,7 +231,7 @@ export default {
         {
           startSocket: "right",
           endSocket: "left",
-          path: "fluid",
+          path: "straight",
           color: "#999999",
           gradient: true,
           hide: true,
