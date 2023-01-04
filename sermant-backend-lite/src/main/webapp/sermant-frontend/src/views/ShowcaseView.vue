@@ -7,7 +7,7 @@
       </div>
     </div>
     <div style="width: 100%; height: 20%">
-      <div style="float: left" ref="consumer">
+      <div style="float: left;margin: 5px" ref="consumer">
         <img src="../assets/img/webWithSermantB.png" class="bar" style="width:100px" />
         <p style="margin: 0px; margin-top:15px;word-break: break-all; width: 75px">{{ consumer }}</p>
       </div>
