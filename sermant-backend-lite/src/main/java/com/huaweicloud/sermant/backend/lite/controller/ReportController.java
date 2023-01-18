@@ -53,6 +53,7 @@ public class ReportController {
 
     private void updateServiceInfo(ReportMessage reportMessage) {
         if (reportMessage.getEventType().equals(UPDATE_CONFIG)) {
+            queue.clear();
             serviceInfoMap.put(ZK_OR_GW, reportMessage.getZkOrGw());
         } else {
             ServiceInfo serviceInfo = new ServiceInfo();
