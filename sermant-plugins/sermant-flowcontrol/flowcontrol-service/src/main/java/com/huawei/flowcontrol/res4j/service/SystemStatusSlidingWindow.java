@@ -44,7 +44,7 @@ public class SystemStatusSlidingWindow implements PluginService {
         /**
          * 定时任务 更新系统状态
          */
-        systemStatus.scheduleAtFixedRate(systemStatusTask, getDelay(), CommonConst.S_MS_UNIT);
+        systemStatus.scheduleAtFixedRate(systemStatusTask, getDelay(), CommonConst.DEFAULT_WINDOWS_UNIT);
     }
 
     private long getDelay() {

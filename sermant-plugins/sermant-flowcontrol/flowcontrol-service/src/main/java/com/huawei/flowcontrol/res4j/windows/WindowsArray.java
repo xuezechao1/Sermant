@@ -39,7 +39,7 @@ public enum WindowsArray {
     /**
      * 默认窗口大小
      */
-    private static final int DEFAULT_WINDOWS_SIZE = 60;
+    private static final int DEFAULT_WINDOWS_SIZE = 120;
 
     /**
      * 滑动窗口数组
@@ -135,7 +135,8 @@ public enum WindowsArray {
      * @return 当前时间点窗口索引
      */
     public int calculateCurrentWindowsIndex() {
-        return Calendar.getInstance().get(Calendar.SECOND) % DEFAULT_WINDOWS_SIZE;
+        return (Calendar.getInstance().get(Calendar.SECOND) * 1000 + Calendar.getInstance().get(Calendar.MILLISECOND))
+                / CommonConst.DEFAULT_WINDOWS_UNIT % DEFAULT_WINDOWS_SIZE;
     }
 
     /**
@@ -168,10 +169,10 @@ public enum WindowsArray {
      * @return 窗口索引
      */
     public int calculateWindowsIndex(long startTime) {
-        if (System.currentTimeMillis() - startTime > DEFAULT_WINDOWS_SIZE * CommonConst.S_MS_UNIT) {
+        if (System.currentTimeMillis() - startTime > DEFAULT_WINDOWS_SIZE * CommonConst.DEFAULT_WINDOWS_UNIT) {
             return -1;
         }
-        return (int) (startTime / CommonConst.S_MS_UNIT % DEFAULT_WINDOWS_SIZE);
+        return (int) (startTime / CommonConst.DEFAULT_WINDOWS_UNIT  % DEFAULT_WINDOWS_SIZE);
     }
 
     /**

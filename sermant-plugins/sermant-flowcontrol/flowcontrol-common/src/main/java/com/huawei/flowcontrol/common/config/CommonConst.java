@@ -246,6 +246,11 @@ public class CommonConst {
     public static final long S_MS_UNIT = 1000L;
 
     /**
+     * 自适应小窗口时间长度 ms
+     */
+    public static final int DEFAULT_WINDOWS_UNIT = 500;
+
+    /**
      * 秒 转 分钟 单位
      */
     public static final long S_M_UNIT = 60L;
