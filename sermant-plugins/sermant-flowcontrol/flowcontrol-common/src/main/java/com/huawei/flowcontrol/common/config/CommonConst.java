@@ -251,6 +251,11 @@ public class CommonConst {
     public static final long S_M_UNIT = 60L;
 
     /**
+     * 默认最大响应时间
+     */
+    public static final int DEFAULT_STATISTIC_MAX_RT = 5000;
+
+    /**
      * 百分比
      */
     public static final double PERCENT = 100.0d;
