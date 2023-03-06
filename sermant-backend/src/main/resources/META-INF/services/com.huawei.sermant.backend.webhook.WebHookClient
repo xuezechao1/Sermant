@@ -1,0 +1,3 @@
+com.huawei.sermant.backend.webhook.feishu.FeiShuHookClient
+com.huawei.sermant.backend.webhook.dingding.DingDingHookClient
+com.huawei.sermant.backend.webhook.welink.WelinkHookClient

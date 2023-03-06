@@ -17,17 +17,26 @@
 package com.huawei.sermant.backend.server;
 
 import com.huawei.sermant.backend.cache.HeartbeatCache;
+import com.huawei.sermant.backend.common.conf.CommonConst;
 import com.huawei.sermant.backend.common.conf.KafkaConf;
+import com.huawei.sermant.backend.dao.EventService;
 import com.huawei.sermant.backend.entity.Address;
 import com.huawei.sermant.backend.entity.AddressScope;
 import com.huawei.sermant.backend.entity.AddressType;
 import com.huawei.sermant.backend.entity.AgentInfo;
+import com.huawei.sermant.backend.entity.EventEntity;
+import com.huawei.sermant.backend.entity.EventLevel;
+import com.huawei.sermant.backend.entity.EventResponseCountEntity;
+import com.huawei.sermant.backend.entity.EventsRequestEntity;
+import com.huawei.sermant.backend.entity.EventsResponseEntity;
 import com.huawei.sermant.backend.entity.HeartBeatResult;
 import com.huawei.sermant.backend.entity.HeartbeatEntity;
 import com.huawei.sermant.backend.entity.MonitorItem;
 import com.huawei.sermant.backend.entity.Protocol;
 import com.huawei.sermant.backend.entity.PublishConfigEntity;
 import com.huawei.sermant.backend.entity.RegisterResult;
+import com.huawei.sermant.backend.entity.WebhooksIdRequestEntity;
+import com.huawei.sermant.backend.entity.WebhooksResponseEntity;
 import com.huawei.sermant.backend.kafka.KafkaConsumerManager;
 import com.huawei.sermant.backend.service.dynamicconfig.DynamicConfigurationFactoryServiceImpl;
 import com.huawei.sermant.backend.service.dynamicconfig.service.DynamicConfigurationService;
@@ -35,6 +44,9 @@ import com.huawei.sermant.backend.service.dynamicconfig.utils.LabelGroupUtils;
 import com.huawei.sermant.backend.util.DateUtil;
 import com.huawei.sermant.backend.util.RandomUtil;
 import com.huawei.sermant.backend.util.UuidUtil;
+import com.huawei.sermant.backend.webhook.EventPushHandler;
+import com.huawei.sermant.backend.webhook.WebHookClient;
+import com.huawei.sermant.backend.webhook.WebHookConfig;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -47,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -81,6 +94,8 @@ public class HttpServer {
 
 
     private final RandomUtil randomUtil = new RandomUtil();
+
+    private EventService eventService = EventService.getInstance();
 
     private long randomLong = UuidUtil.getId();
     private final int randomInt = randomUtil.getRandomInt(MAX);
@@ -125,6 +140,93 @@ public class HttpServer {
             ConsumerRecords<String, String> consumerRecords = getHeartbeatInfo();
             return JSONObject.toJSONString(getHeartbeatMessage(consumerRecords));
         }
+    }
+
+    /**
+     * 查询事件
+     *
+     * @param eventsRequestEntity 查询时间请求实体
+     * @return 查询结果
+     */
+    @PostMapping("/event/events")
+    public EventsResponseEntity queryEvent(@RequestBody(required = false) EventsRequestEntity eventsRequestEntity) {
+        EventsResponseEntity eventsResponseEntity = new EventsResponseEntity();
+        List<EventEntity> queryResult = eventService.queryEvent(eventsRequestEntity);
+        setEventCount(eventsResponseEntity, queryResult);
+        eventsResponseEntity.setTotal(queryResult.size());
+        eventsResponseEntity.setEventEntities(queryResult);
+        eventsResponseEntity.setPageSize(CommonConst.DEFAULT_PAGE_SIZE);
+        eventsResponseEntity.setPageNum(queryResult.size() / CommonConst.DEFAULT_PAGE_SIZE + 1);
+        return eventsResponseEntity;
+    }
+
+    /**
+     * 查询webhook
+     *
+     * @return webhook信息
+     */
+    @GetMapping("/event/webhooks")
+    public WebhooksResponseEntity getWebhooks() {
+        WebhooksResponseEntity webhooksResponseEntity = new WebhooksResponseEntity();
+        EventPushHandler eventPushHandler = new EventPushHandler();
+        List<WebHookClient> webHookClients = eventPushHandler.getWebHookClients();
+        webhooksResponseEntity.setTotal(webHookClients.size());
+        List<WebHookConfig> webHookConfigs = new ArrayList<>();
+        for (WebHookClient webHookClient : webHookClients) {
+            webHookConfigs.add(webHookClient.getConfig());
+        }
+        webhooksResponseEntity.setWebhooks(webHookConfigs);
+        return webhooksResponseEntity;
+    }
+
+    /**
+     * 配置webhook
+     *
+     * @param webhooksIdRequestEntity webhook配置请求实体
+     * @param id                      webhook id
+     * @return 配置结果
+     */
+    @PostMapping("/event/webhooks/{id}")
+    public boolean setWebhook(@RequestBody(required = false) WebhooksIdRequestEntity webhooksIdRequestEntity,
+                              @PathVariable String id) {
+        EventPushHandler eventPushHandler = new EventPushHandler();
+        List<WebHookClient> webHookClients = eventPushHandler.getWebHookClients();
+        try {
+            for (WebHookClient webHookClient : webHookClients) {
+                WebHookConfig config = webHookClient.getConfig();
+                if (id.equals(config.getId().toString())) {
+                    config.setUrl(webhooksIdRequestEntity.getUrl());
+                    config.setEnable(webhooksIdRequestEntity.isEnable());
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            LOGGER.error(String.format("set webhook config:[%s] failed, errir message:[%s]",
+                    JSONObject.toJSONString(webHookClients), e.getMessage()));
+            return false;
+        }
+    }
+
+    private void setEventCount(EventsResponseEntity eventsResponseEntity, List<EventEntity> queryResult) {
+        int emergencyNum = 0;
+        int importantNum = 0;
+        int normalNum = 0;
+        EventResponseCountEntity eventResponseCountEntity = new EventResponseCountEntity();
+        for (EventEntity eventEntity : queryResult) {
+            if (eventEntity.getLevel().equals(EventLevel.EMERGENCY)) {
+                emergencyNum += 1;
+                continue;
+            }
+            if (eventEntity.getLevel().equals(EventLevel.IMPORTANT)) {
+                importantNum += 1;
+                continue;
+            }
+            normalNum += 1;
+        }
+        eventResponseCountEntity.setEmergency(emergencyNum);
+        eventResponseCountEntity.setImportant(importantNum);
+        eventResponseCountEntity.setNormal(normalNum);
+        eventsResponseEntity.setEventCount(eventResponseCountEntity);
     }
 
     @PostMapping("/publishConfig")
