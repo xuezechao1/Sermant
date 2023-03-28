@@ -14,53 +14,40 @@
  * limitations under the License.
  */
 
-package com.huaweicloud.sermant.backend.entity;
-
-import lombok.Getter;
-import lombok.Setter;
+package com.huaweicloud.sermant.backend.util;
 
 /**
- * 事件元数据
+ * 字符串工具类
  *
  * @author xuezechao
  * @since 2023-03-02
  */
-@Getter
-@Setter
-public class InstanceMeta {
+public class StringUtils {
 
     /**
-     * 实例原数据哈希
+     * 构造函数
      */
-    private String metaHash;
+    private StringUtils() {
+
+    }
 
     /**
-     * 实例ID
+     * 字符串判空
+     *
+     * @param val 字符串
+     * @return 是否为空
      */
-    private String instanceId;
+    public static boolean isEmpty(String val) {
+        return val == null || "".equals(val.trim());
+    }
 
     /**
-     * 应用
+     * 字符串转int 空返回0
+     *
+     * @param val 字符串
+     * @return 字符串转int值
      */
-    private String service;
-
-    /**
-     * 节点
-     */
-    private NodeEntity node;
-
-    /**
-     * 集群
-     */
-    private ClusterEntity cluster;
-
-    /**
-     * 环境
-     */
-    private EnvironmentEntity environment;
-
-    /**
-     * 可用区
-     */
-    private String az;
+    public static int filterStr(String val) {
+        return val == null ? 0 : Integer.parseInt(val);
+    }
 }
