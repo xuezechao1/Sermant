@@ -77,6 +77,8 @@ public class RestTemplateInterceptor extends MarkInterceptor {
             params.put("description", "[devspore] service request by domain name");
             params.put("timeStamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             params.put("instanceId", BootArgsIndexer.getInstanceId());
+            params.put("destination", "");
+            params.put("destinationWithSermant", true);
             reportService.report(params);
             return context;
         }
@@ -103,6 +105,8 @@ public class RestTemplateInterceptor extends MarkInterceptor {
         params.put("description", "[devspore] service request by registry center");
         params.put("timeStamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         params.put("instanceId", BootArgsIndexer.getInstanceId());
+        params.put("destination", "");
+        params.put("destinationWithSermant", true);
         reportService.report(params);
         return context;
     }
